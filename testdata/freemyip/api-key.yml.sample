@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: freemyip-token
+  namespace: cert-manager
+type: Opaque
+stringData:
+  token: "YOUR_FREEMYIP_TOKEN_HERE"

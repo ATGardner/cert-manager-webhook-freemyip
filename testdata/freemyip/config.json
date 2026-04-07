@@ -1,0 +1,6 @@
+{
+    "apiTokenSecretRef": {
+        "name": "freemyip-token",
+        "key": "token"
+    }
+}

@@ -1,0 +1,60 @@
+---
+# Self-signed Issuer — used to bootstrap the webhook's own CA.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "cert-manager-webhook-freemyip.selfSignedIssuer" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+{{ include "cert-manager-webhook-freemyip.labels" . | indent 4 }}
+spec:
+  selfSigned: {}
+
+---
+# Root CA certificate for signing the webhook's serving certificate.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "cert-manager-webhook-freemyip.rootCACertificate" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+{{ include "cert-manager-webhook-freemyip.labels" . | indent 4 }}
+spec:
+  secretName: {{ include "cert-manager-webhook-freemyip.rootCACertificate" . }}
+  duration: 43800h0m0s # 5y
+  issuerRef:
+    name: {{ include "cert-manager-webhook-freemyip.selfSignedIssuer" . }}
+  commonName: "ca.cert-manager-webhook-freemyip.cert-manager"
+  isCA: true
+
+---
+# Issuer backed by the CA above.
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: {{ include "cert-manager-webhook-freemyip.rootCAIssuer" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+{{ include "cert-manager-webhook-freemyip.labels" . | indent 4 }}
+spec:
+  ca:
+    secretName: {{ include "cert-manager-webhook-freemyip.rootCACertificate" . }}
+
+---
+# TLS serving certificate for the webhook pod.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: {{ include "cert-manager-webhook-freemyip.servingCertificate" . }}
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+{{ include "cert-manager-webhook-freemyip.labels" . | indent 4 }}
+spec:
+  secretName: {{ include "cert-manager-webhook-freemyip.servingCertificate" . }}
+  duration: 8760h0m0s # 1y
+  issuerRef:
+    name: {{ include "cert-manager-webhook-freemyip.rootCAIssuer" . }}
+  dnsNames:
+    - {{ include "cert-manager-webhook-freemyip.fullname" . }}
+    - {{ include "cert-manager-webhook-freemyip.fullname" . }}.{{ .Release.Namespace }}
+    - {{ include "cert-manager-webhook-freemyip.fullname" . }}.{{ .Release.Namespace }}.svc
