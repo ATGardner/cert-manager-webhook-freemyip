@@ -1,6 +1,6 @@
 # groupName identifies the webhook within cert-manager.  Must be unique across
 # all webhooks deployed to the same cert-manager instance.
-groupName: acme.freemyip.emulatorchen.github.com
+groupName: acme.freemyip.atgardner.github.com
 
 logLevel: 2
 
@@ -21,8 +21,9 @@ clusterIssuer:
     create: false
 
 image:
-  repository: ghcr.io/emulatorchen/cert-manager-webhook-freemyip
-  tag: "0.1.0"
+  repository: ghcr.io/atgardner/cert-manager-webhook-freemyip
+  # Defaults to the chart appVersion when empty.
+  tag: ""
   pullPolicy: IfNotPresent
 
 certManager:
