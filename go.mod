@@ -1,6 +1,6 @@
 module github.com/emulatorchen/cert-manager-webhook-freemyip
 
-go 1.22
+go 1.26
 
 require (
 	github.com/cert-manager/cert-manager v1.14.7
