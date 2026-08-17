@@ -31,6 +31,16 @@
       "automerge": true
     },
     {
+      "description": [
+        "The chart ships this repo's own image, with image.tag deliberately left empty so it falls back to the chart appVersion that release-please and CI set per release.",
+        "docker:pinDigests writes the digest into that empty tag, and deployment.yaml renders `{{ repository }}:{{ tag | default appVersion }}`, so the image comes out as the invalid `repo:@sha256:...`. There are no chart unit tests here to catch it, so it would surface as an ImagePullBackOff.",
+        "Digests never belong in this values file; plain version updates still apply, should the chart ever point at an image it does not build."
+      ],
+      "matchManagers": ["helm-values"],
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "enabled": false
+    },
+    {
       "matchManagers": ["gomod"],
       "groupName": "Go dependencies"
     },
