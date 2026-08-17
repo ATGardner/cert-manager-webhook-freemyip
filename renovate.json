@@ -1,11 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:recommended",
+    "config:best-practices",
     "helpers:pinGitHubActionDigestsToSemver",
     ":prHourlyLimitNone"
   ],
   "labels": ["dependencies"],
+  "semanticCommits": "enabled",
   "timezone": "Asia/Jerusalem",
   "minimumReleaseAge": "3 days",
   "minimumReleaseAgeBehaviour": "timestamp-optional",
@@ -13,23 +14,24 @@
   "postUpdateOptions": ["gomodTidy"],
   "packageRules": [
     {
-      "matchUpdateTypes": [
-        "minor",
-        "patch"
-      ],
+      "description": "Automerge non-major updates. Riskier managers opt out below.",
+      "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
     },
     {
-      "matchManagers": [
-        "github-actions"
-      ],
-      "groupName": "GitHub Actions",
-      "pinDigests": true
+      "description": "Actions bumps touch the release workflow, where a bad version fails quietly instead of turning CI red. Digests stay pinned by helpers:pinGitHubActionDigestsToSemver; merge by hand.",
+      "matchManagers": ["github-actions"],
+      "groupName": "github actions",
+      "automerge": false
     },
     {
-      "matchManagers": [
-        "gomod"
-      ],
+      "description": "Base-image digest refreshes are content-identical rebuilds; CI is enough.",
+      "matchManagers": ["dockerfile"],
+      "matchUpdateTypes": ["digest", "pinDigest"],
+      "automerge": true
+    },
+    {
+      "matchManagers": ["gomod"],
       "groupName": "Go dependencies"
     },
     {
@@ -45,12 +47,6 @@
         "sigs.k8s.io/controller-runtime"
       ],
       "enabled": false
-    },
-    {
-      "matchManagers": [
-        "dockerfile"
-      ],
-      "groupName": "Docker base images"
     }
   ]
 }
